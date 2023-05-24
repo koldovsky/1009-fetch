@@ -1,0 +1,9 @@
+.products__carousel {
+    display: flex;
+    justify-content: space-around;
+}
+
+.products__carousel-slide {
+    display: flex;
+    gap: 10px;
+}
