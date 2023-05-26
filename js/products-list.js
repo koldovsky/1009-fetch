@@ -1,37 +1,14 @@
-const products = [
-    {
-        id: '1',
-        name: 'Baby Yoda',
-        price: 10,
-        image: 'img/baby-yoda.svg',
-        description: 'Adorable baby version of the famous Star Wars character, Yoda.'
-    },
-    {
-        id: '2',
-        name: 'Banana',
-        price: 12,
-        image: 'img/banana.svg',
-        description: 'A yellow fruit with a curved shape, typically eaten as a snack.'
-    },
-    {
-        id: '3',
-        name: 'Girl',
-        price: 12,
-        image: 'img/girl.svg',
-        description: 'Illustration of a girl, representing femininity and youth.'
-    },
-    {
-        id: '4',
-        name: 'Viking',
-        price: 12,
-        image: 'img/viking.svg',
-        description: 'Depiction of a Viking warrior, known for their strength and bravery.'
-    }
-];
+const response = await fetch('api/products.json');
+const products = await response.json();
+renderProducts(products, 1);
 
-products.sort(() => Math.random() - 0.5);
+// fetch('api/products.json')
+//     .then( response => response.json()  )
+//     .then( products => renderProducts(products ))
 
-function renderProducts(products) {
+// products.sort(() => Math.random() - 0.5);
+
+function renderProducts(products, rate) {
     let html = '';
     for (const product of products) {
         html += `<article class="product-card">
@@ -44,7 +21,7 @@ function renderProducts(products) {
                 Info
             </button>
             <button class="product-card__buttons-buy button button-card">
-                Buy ($${product.price})
+                Buy (${(product.price * rate).toFixed(2)})
             </button>
         </div>
     </article>`;
@@ -53,5 +30,17 @@ function renderProducts(products) {
     productList.innerHTML = html;
 }
 
-renderProducts(products);
+document.querySelector('.products__currency').addEventListener('change', convertCurrency);
+
+let currencies;
+async function convertCurrency(ev) {
+    if (!currencies) {
+        const response = await fetch('https://api.exchangerate-api.com/v4/latest/USD');
+        currencies = await response.json();
+    }
+    const convertTo = ev.target.value;
+    const rate = currencies.rates[convertTo];
+    renderProducts(products, rate);
+}
+
 
